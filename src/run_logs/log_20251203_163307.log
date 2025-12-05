@@ -1,0 +1,47 @@
+2025-12-03 16:33:07,910 | WARNING | Kitaev Lattice | run_all.py:67 | Coupling was turned off but you still passed a value to Coupling_strength:1.0!
+Setting coupling to 0!
+2025-12-03 16:33:07,930 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:07,947 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:07,958 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:07,986 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:07,999 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:08,015 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:08,026 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:08,036 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:08,052 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:08,063 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:08,073 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:08,084 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:08,099 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:08,109 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>
+2025-12-03 16:33:08,120 | CRITICAL | Kitaev Lattice | run_all.py:138 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'int'>
+From tirangle lattice we have type <class 'int'>

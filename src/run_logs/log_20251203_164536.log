@@ -1,0 +1,47 @@
+2025-12-03 16:45:36,336 | WARNING | Kitaev Lattice | run_all.py:67 | Coupling was turned off but you still passed a value to Coupling_strength:1.0!
+Setting coupling to 0!
+2025-12-03 16:45:36,357 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,367 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,378 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,391 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,405 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,416 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,426 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,441 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,451 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,462 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,481 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,492 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,508 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,518 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>
+2025-12-03 16:45:36,533 | CRITICAL | Kitaev Lattice | run_all.py:139 | !!The typing is not right from the computation, this will crash or corrupt the cache!!
+From kit computation we have type <class 'numpy.float64'>
+From tirangle lattice we have type <class 'numpy.float64'>

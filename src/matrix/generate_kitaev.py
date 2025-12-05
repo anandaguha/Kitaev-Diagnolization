@@ -1,5 +1,39 @@
+from numpy.typing import NDArray
 import numpy as np
-def build_kitaev_matrix(N, wp, t, ep, g, Jx=1.0, Jy=1.0, Jz=1.0):
+def __generateLists__ (plackList,nx,ny):
+    PlackPairList = []
+    idx1 = -1
+    idx2= -1
+    zlist = []
+    xlist = []
+    #print(len(plackList))
+    for idx,plack in enumerate(plackList):
+        #print(idx)
+        if plack == 1 and idx1 == -1 and idx2 == -1:
+            idx1 = idx
+        elif plack == 1 and idx1 != -1:
+            PlackPairList.append((idx1,idx))
+            idx1 = -1 
+    #print(plackList,PlackPairList)
+    for p1,p2 in PlackPairList:
+        r1= p1//ny
+        r2= p2//ny
+        c1= p1%ny
+        c2= p2%ny
+        #print(r1,c1,r2,c2)
+        site1 = (r1*2*nx)+2*c1 
+        site2 = (r2*2*nx)+2*c2
+        for col in range(0,c2-c1):
+            zlist.append(site1+2*(1+col))
+        if r2-r1 > 0:
+            for row in range(0,r2-r1):
+                xlist.append(site2-row*2*nx)
+        elif r2-r1 < 0:
+            for row in range(0,r1-r2):
+                xlist.append(site2+((row+1)*2*nx))
+
+    return zlist,xlist
+def build_kitaev_matrix(N, wp, t, ep, g, Jx=1.0, Jy=1.0, Jz=1.0) -> NDArray[np.floating]:
     # Total number of sites (2 per unit cell)
     num_sites = 2 * N * N
 
@@ -9,7 +43,7 @@ def build_kitaev_matrix(N, wp, t, ep, g, Jx=1.0, Jy=1.0, Jz=1.0):
     # Initialize the M matrixes
     M_hex = 1j*np.zeros((num_sites, num_sites))
     
-    zlist, xlist = generateLists(wp,N,N)
+    zlist, xlist = __generateLists__(wp,N,N)
     #print(xlist)
     #print(zlist)
     
@@ -46,7 +80,7 @@ def build_kitaev_matrix(N, wp, t, ep, g, Jx=1.0, Jy=1.0, Jz=1.0):
                 M_hex[idx_A_next, idx_B] = -2*Jz*1j
     return M_hex
 
-def build_trig_matrix(N:int,wp,t:float,g:float,Up_down:int, ep:float,Jx:float=1.0,Jy:float=1.0,Jz:float=1.0)->np.ndarray[float]:
+def build_trig_matrix(N:int,wp,t:float,g:float,Up_down:int, ep:float,Jx:float=1.0,Jy:float=1.0,Jz:float=1.0)->NDArray[np.floating]:
     num_sites = N * N
     # M_tup = 1j*np.zeros((num_sites, num_sites))
     # M_tdown = 1j*np.zeros((num_sites, num_sites))
@@ -111,36 +145,3 @@ def build_trig_matrix(N:int,wp,t:float,g:float,Up_down:int, ep:float,Jx:float=1.
                 # M_tdown[idx,idx] += g+ep
     return M_trig
 
-def generateLists (plackList,nx,ny):
-    PlackPairList = []
-    idx1 = -1
-    idx2= -1
-    zlist = []
-    xlist = []
-    #print(len(plackList))
-    for idx,plack in enumerate(plackList):
-        #print(idx)
-        if plack == 1 and idx1 == -1 and idx2 == -1:
-            idx1 = idx
-        elif plack == 1 and idx1 != -1:
-            PlackPairList.append((idx1,idx))
-            idx1 = -1 
-    #print(plackList,PlackPairList)
-    for p1,p2 in PlackPairList:
-        r1= p1//ny
-        r2= p2//ny
-        c1= p1%ny
-        c2= p2%ny
-        #print(r1,c1,r2,c2)
-        site1 = (r1*2*nx)+2*c1 
-        site2 = (r2*2*nx)+2*c2
-        for col in range(0,c2-c1):
-            zlist.append(site1+2*(1+col))
-        if r2-r1 > 0:
-            for row in range(0,r2-r1):
-                xlist.append(site2-row*2*nx)
-        elif r2-r1 < 0:
-            for row in range(0,r1-r2):
-                xlist.append(site2+((row+1)*2*nx))
-
-    return zlist,xlist
