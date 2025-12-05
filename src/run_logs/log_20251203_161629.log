@@ -1,2 +1,0 @@
-2025-12-03 16:16:29,007 | WARNING | Kitaev Lattice | run_all.py:67 | Coupling was turned off but you still passed a value to Coupling_strength:1.0!
-Setting coupling to 0!
