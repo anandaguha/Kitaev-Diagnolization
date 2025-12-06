@@ -1,4 +1,14 @@
-###proj written imports###
+#makes sure the path is the root dir so we can use the proj written imports
+import sys
+from pathlib import Path
+
+# Add project root (directory containing src/) to sys.path
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+
+
+###importing from project###
 
 ###########   Matrix building, diagnolizing, and collecting   ###########    
 from src.matrix.generate_kitaev import build_kitaev_matrix, build_trig_matrix
@@ -18,14 +28,16 @@ from src.utils.cache import check_cache, write_cache
 from src.utils.setup_logger import setup_logger
 ##########################################################
 
+###end importing from projects###
 
 #outsourced pckgs
 import os
 import numpy as np
 import pandas as pd
 import tqdm
+import argparse
 
-#partial imports
+#outsourced partial imports
 from fractions import Fraction
 from typing import Callable, Any, List, Tuple, Optional
 from numpy.typing import NDArray
@@ -35,7 +47,7 @@ def main(Fermi_hopping_range: Tuple[float,float] = (0,1), NNSpin_coupling_range:
          Chemical_potential: float =0,
          Unit_cells:int = 12, Gridding:int = 10,
          Coupling:bool = True, Coupling_strength:float = 1,
-         Caching:bool=True, Special_cache_func:Callable = lambda x:x,
+         Caching:bool=True, Special_cache_func:Optional[Callable] = None,
          Logging_path:Optional[str]=None, Logging_level:Optional[str|int]=None) -> None:
     """
     What it does
@@ -71,13 +83,17 @@ def main(Fermi_hopping_range: Tuple[float,float] = (0,1), NNSpin_coupling_range:
         finalList = [] #make a dict where you have the key being {placket,g,k:} and then the values are something tbd
         #start looping through the points
         for g in np.linspace(Fermi_hopping_range[0],Fermi_hopping_range[1],points): #orginally np.arange(0.3,0.8,0.005)
-            for k in [NNSpin_coupling_range[0], NNSpin_coupling_range[1],points]:#np.arange(0.45,0.5,0.001):
+            for k in np.linspace(NNSpin_coupling_range[0], NNSpin_coupling_range[1],points):#np.arange(0.45,0.5,0.001):
                 allWP = []
                 #first check the cache and skip the 
-                minIndex = check_cache("Kit",g,k,t,filling,N)
+                if Special_cache_func == None:
+                    minIndex = check_cache("Kit",g,k,t,filling,N)
+                else:
+                    minIndex = check_cache("Kit",g,k,t,filling,N,path_generator=Special_cache_func)
                 if minIndex:
                     #if the cache hits then skip the computation and skip the g,k value.
                     # finalList.append ([g,k,minIndex])
+                    print("Skipped the wp computation it is alredy in the cache")
                     continue
                 else:
                     for index,Wp in enumerate(placketLists):
@@ -105,8 +121,8 @@ def main(Fermi_hopping_range: Tuple[float,float] = (0,1), NNSpin_coupling_range:
                         eigen_vals_up_down = np.concatenate((eigen_vals_up, eigen_vals_down))
                         
                         #lambda expressions for gathering
-                        Sum_pos:Callable = lambda lst: sum(x for x in lst if x > 0 )
-                        Sum_lowest_n:Callable = lambda lst: sum(x for x,idx in enumerate(lst) if idx < (N*N*filling))
+                        Sum_pos:Callable = lambda lst: np.sum(lst[lst>0])
+                        Sum_lowest_n:Callable = lambda lst: sum(x for idx,x in enumerate(lst) if idx < (N*N*filling))
                         
                         #gather the energies as you please using the lambda expressions
                         summed_kit =  collect_eigen_val(eigen_vals_kit,True,Sum_pos)
@@ -115,19 +131,30 @@ def main(Fermi_hopping_range: Tuple[float,float] = (0,1), NNSpin_coupling_range:
                         print(f"Finished computing for g:{g} and k:{k} and wp:{index}")   
                         
                         #update the result
-                        if type(summed_kit) == float and type(summed_up_down) == float:
+                        if type(summed_kit) == np.float64 and type(summed_up_down) == np.float64:
+                            #appending 
                             allWP.append(summed_kit + summed_up_down)
-                        
-                        print(f"done computeing all wp for g,k pair {g,k} now finding the minuimum wp!" )
+                        else:
+                            print("Typing went wrong!")
+                            logger.critical(f"!!The typing is not right from the computation, this will crash or corrupt the cache!!\nFrom kit computation we have type {type(summed_kit)}\nFrom tirangle lattice we have type {type(summed_up_down)}")
+                    print(f"done computeing all wp for g,k pair {g,k} now finding the minuimum wp!" )
                     
                     #once you do compute for all wp values then we can compute which one was the "best"
+                    print(len(allWP))
+                    if len(allWP) != len(placketLists):
+                        print("Some plackets were siliently skipped")
+                        logger.critical(f"!!Cache has been corrupted!! Not all placets were accounted for!!")
                     minEnergy = min([gse for gse in allWP ])
                     minIndex = allWP.index(minEnergy)
                     minPlackConfig = placketLists[minIndex]
+                    
                     # finalList.append ([g,k,minIndex])
                     
                     #update the cache
-                    write_cache("Kit",g,k,t,filling,N, minPlackConfig)
+                    if Special_cache_func == None:
+                        write_cache("Kit",g,k,t,filling,N, minIndex)
+                    else:
+                        write_cache("Kit",g,k,t,filling,N, minIndex,Special_cache_func)
                     print(f"Appended min index {minIndex} for g,k value {g,k}! to the cache")
     #     df = pd.DataFrame(finalList, columns=["g","k", "winning_config"])
     #     df.to_csv(f"phase_results_ZoomgkpointTEST_{filling}.csv", index=False)
@@ -160,5 +187,84 @@ def main(Fermi_hopping_range: Tuple[float,float] = (0,1), NNSpin_coupling_range:
 #     return finalList
 
 if __name__ == "__main__":
-    
-    main()
+    parser = argparse.ArgumentParser(
+        description="Run the Kitaev–trig phase diagram computation with caching and logging."
+    )
+    parser.add_argument(
+        "--Fermi_hopping_range",
+        type=float,
+        nargs=2,
+        metavar=("g_min", "g_max"),
+        help="Range of g values to scan."
+    )
+    parser.add_argument(
+        "--NNSpin_coupling_range",
+        type=float,
+        nargs=2,
+        metavar=("k_min", "k_max"),
+        help="Range of k values to scan."
+    )
+    parser.add_argument(
+        "--Chemical_potential",
+        type=float,
+        help="Chemical potential μ used in the trig matrices."
+    )
+    parser.add_argument(
+        "--Unit_cells",
+        type=int,
+        default=12,
+        help="Number of unit cells (N)."
+    )
+    parser.add_argument(
+        "--Gridding",
+        type=int,
+        default=10,
+        help="Number of sample points in the g and k directions."
+    )
+    parser.add_argument(
+        "--Coupling",
+        action="store_true",
+        default = True,
+        help="Enable coupling t = Coupling_strength. If not passed, t=0 unless Coupling_strength is 0."
+    )
+    parser.add_argument(
+        "--Coupling_strength",
+        type=float,
+        default=1.0,
+        help="Value of t if coupling is enabled."
+    )
+    parser.add_argument(
+        "--Caching",
+        type=lambda x: x.lower() in ("1", "true", "yes", "y"),
+        default=True,
+        help="Enable or disable cache (True/False)."
+    )
+    parser.add_argument(
+        "--Logging_path",
+        type=str,
+        default=None,
+        help="Optional path for log file."
+    )
+    parser.add_argument(
+        "--Logging_level",
+        type=str,
+        default=None,
+        help="Logging level (e.g. DEBUG, INFO, WARNING)."
+    )
+    args = parser.parse_args()
+
+    # Run main with unpacked arguments
+    main(
+        Fermi_hopping_range=tuple(args.Fermi_hopping_range),
+        NNSpin_coupling_range=tuple(args.NNSpin_coupling_range),
+        Chemical_potential=args.Chemical_potential,
+        Unit_cells=args.Unit_cells,
+        Gridding=args.Gridding,
+        Coupling=args.Coupling,
+        Coupling_strength=args.Coupling_strength,
+        Caching=args.Caching,
+        Special_cache_func= lambda calling, t, filling, Number_tiles: \
+    f"{calling}NVal_{str(Number_tiles)}_TVal_{str(t)}_Filling_{str(filling).replace('/', '-')}_TEST.csv" #testing
+        # Logging_path=args.Logging_path,
+        # Logging_level=args.Logging_level
+    )
