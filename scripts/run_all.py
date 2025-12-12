@@ -42,7 +42,11 @@ from fractions import Fraction
 from typing import Callable, Any, List, Tuple, Optional
 from numpy.typing import NDArray
 
-
+#coupling range is g
+#Kitaev strenght range is K
+# Fermi hopping t
+# Chemical_potential is ep good 
+#filling for filing is fine
 def main(Fermi_hopping_range: Tuple[float,float] = (0,1), NNSpin_coupling_range: Tuple[float,float]= (0,1), 
          Chemical_potential: float =0,
          Unit_cells:int = 12, Gridding:int = 10,
@@ -66,8 +70,10 @@ def main(Fermi_hopping_range: Tuple[float,float] = (0,1), NNSpin_coupling_range:
         if Coupling_strength != 0:
             logger.warning(f"Coupling was turned off but you still passed a value to Coupling_strength:{Coupling_strength}!\nSetting coupling to 0!")
             t = 0
+            g = 0
         else:
             t = 0
+            g = 0
     N=Unit_cells
     points = Gridding
     ep = Chemical_potential
@@ -121,7 +127,7 @@ def main(Fermi_hopping_range: Tuple[float,float] = (0,1), NNSpin_coupling_range:
                         eigen_vals_up_down = np.concatenate((eigen_vals_up, eigen_vals_down))
                         
                         #lambda expressions for gathering
-                        Sum_pos:Callable = lambda lst: np.sum(lst[lst>0])
+                        Sum_pos:Callable = lambda lst: -0.5*np.sum(lst[lst>0])
                         Sum_lowest_n:Callable = lambda lst: sum(x for idx,x in enumerate(lst) if idx < (N*N*filling))
                         
                         #gather the energies as you please using the lambda expressions
@@ -268,3 +274,6 @@ if __name__ == "__main__":
         # Logging_path=args.Logging_path,
         # Logging_level=args.Logging_level
     )
+@__cached
+def build_matrix_cached():
+    return build_matrix
