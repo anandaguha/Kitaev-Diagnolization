@@ -47,10 +47,10 @@ from numpy.typing import NDArray
 # Fermi hopping t
 # Chemical_potential is ep good 
 #filling for filing is fine
-def main(Fermi_hopping_range: Tuple[float,float] = (0,1), NNSpin_coupling_range: Tuple[float,float]= (0,1), 
+def main(Coupling_strength_min_max: Tuple[float,float] = (0,1), NNSpin_coupling_min_max: Tuple[float,float]= (0,1), 
          Chemical_potential: float =0,
          Unit_cells:int = 12, Gridding:int = 10,
-         Coupling:bool = True, Coupling_strength:float = 1,
+         Coupling:bool = True, Fermi_hopping:float = 1,
          Caching:bool=True, Special_cache_func:Optional[Callable] = None,
          Logging_path:Optional[str]=None, Logging_level:Optional[str|int]=None) -> None:
     """
@@ -65,17 +65,17 @@ def main(Fermi_hopping_range: Tuple[float,float] = (0,1), NNSpin_coupling_range:
     
     ### PHYSICAL MEANING BEHIND MOST VARIBABLES USED IN THE CODE!!! ##
     if Coupling:
-        t = Coupling_strength
+        t = Fermi_hopping
+        gRange = np.linspace(Coupling_strength_min_max[0],Coupling_strength_min_max[1],Gridding)
     else:
-        if Coupling_strength != 0:
-            logger.warning(f"Coupling was turned off but you still passed a value to Coupling_strength:{Coupling_strength}!\nSetting coupling to 0!")
-            t = 0
-            g = 0
-        else:
-            t = 0
-            g = 0
+        if Coupling_strength_min_max[1] != 0:
+            logger.warning(f"Coupling was turned off but you still passed a value to Coupling_strength:{Coupling_strength_min_max[1]}!\nSetting coupling to 0!")
+        t = 0
+        gRange = [0]
+    print(f"Coupling is {Coupling} and t value is {t}")
     N=Unit_cells
     points = Gridding
+    kRange = np.linspace(NNSpin_coupling_min_max[0], NNSpin_coupling_min_max[1], Gridding)
     ep = Chemical_potential
     #################################################################
     
@@ -88,10 +88,11 @@ def main(Fermi_hopping_range: Tuple[float,float] = (0,1), NNSpin_coupling_range:
     for filling in [1/2,1/4,1/3]:
         finalList = [] #make a dict where you have the key being {placket,g,k:} and then the values are something tbd
         #start looping through the points
-        for g in np.linspace(Fermi_hopping_range[0],Fermi_hopping_range[1],points): #orginally np.arange(0.3,0.8,0.005)
-            for k in np.linspace(NNSpin_coupling_range[0], NNSpin_coupling_range[1],points):#np.arange(0.45,0.5,0.001):
+        for g in gRange: #orginally np.arange(0.3,0.8,0.005)
+            for k in kRange: #np.arange(0.45,0.5,0.001):
                 allWP = []
                 #first check the cache and skip the 
+                print(f"In main the t value is {t}")
                 if Special_cache_func == None:
                     minIndex = check_cache("Kit",g,k,t,filling,N)
                 else:
@@ -197,14 +198,14 @@ if __name__ == "__main__":
         description="Run the Kitaev–trig phase diagram computation with caching and logging."
     )
     parser.add_argument(
-        "--Fermi_hopping_range",
+        "--Coupling_strength_min_max",
         type=float,
         nargs=2,
         metavar=("g_min", "g_max"),
-        help="Range of g values to scan."
+        help="Range of g values to scan. Input them like this --Coupling_strenght_min_max <starting int> <final int>"
     )
     parser.add_argument(
-        "--NNSpin_coupling_range",
+        "--NNSpin_coupling_min_max",
         type=float,
         nargs=2,
         metavar=("k_min", "k_max"),
@@ -229,12 +230,12 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--Coupling",
-        action="store_true",
+        action="store_false",
         default = True,
         help="Enable coupling t = Coupling_strength. If not passed, t=0 unless Coupling_strength is 0."
     )
     parser.add_argument(
-        "--Coupling_strength",
+        "--Fermi_hopping",
         type=float,
         default=1.0,
         help="Value of t if coupling is enabled."
@@ -261,19 +262,16 @@ if __name__ == "__main__":
 
     # Run main with unpacked arguments
     main(
-        Fermi_hopping_range=tuple(args.Fermi_hopping_range),
-        NNSpin_coupling_range=tuple(args.NNSpin_coupling_range),
+        Coupling_strength_min_max=tuple(args.Coupling_strength_min_max),
+        NNSpin_coupling_min_max=tuple(args.NNSpin_coupling_min_max),
         Chemical_potential=args.Chemical_potential,
         Unit_cells=args.Unit_cells,
         Gridding=args.Gridding,
         Coupling=args.Coupling,
-        Coupling_strength=args.Coupling_strength,
+        Fermi_hopping=args.Fermi_hopping,
         Caching=args.Caching,
         Special_cache_func= lambda calling, t, filling, Number_tiles: \
-    f"{calling}NVal_{str(Number_tiles)}_TVal_{str(t)}_Filling_{str(filling).replace('/', '-')}_TEST.csv" #testing
+    f"{calling}NVal_{str(Number_tiles)}_TVal_{str(t)}_Filling_{str(filling).replace('/', '-')}_DEBUG.csv" #testing
         # Logging_path=args.Logging_path,
         # Logging_level=args.Logging_level
     )
-@__cached
-def build_matrix_cached():
-    return build_matrix

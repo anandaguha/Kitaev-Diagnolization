@@ -96,6 +96,7 @@ def check_cache( calling: str,
         or the new winning_config if it was just written.
     """
     path = path_generator(calling = calling, t = t , filling = filling, Number_tiles = Number_tiles)
+    print(f"We are using the cache path: {path} t value is :{t}")
     # Ensure parent directory exists
     dir_name = os.path.dirname(path)
     if dir_name:
