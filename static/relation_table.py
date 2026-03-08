@@ -3,8 +3,8 @@ from types import SimpleNamespace
 
 params = SimpleNamespace(
     table1 = np.array([
-        [1,1,0],
-        [0,0,1]
+        [1,1,0,1,1,0],
+        [0,0,1,0,0,1]
     ]),
     table2 = np.array([
         [2,2,0,1,1,0],
