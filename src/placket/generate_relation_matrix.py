@@ -69,7 +69,7 @@ class Relation_Table:
     #TODO: fix itterator for loop !
     #public method
     def create_momentum_transform (self):
-        table = np.zeros ((self._total_bonds,self._total_bonds))
+        table = np.zeros ((self._neighbor_table.shape[0],self._neighbor_table.shape[0]))
         unit_cell_bond_one_neighbor_basis = self._basis_unit_cell[0]
         unit_cell_bond_two_neighbor_basis = self._basis_unit_cell[1]
         def functional_momentum_matrix(k1,k2):
