@@ -74,14 +74,15 @@ def test_matrix_evaluation():
     
     class_table_2 = Relation_Table(neighbor_table = consts.params.table1 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
     class_phase_2 = class_table_2.create_momentum_transform()
+    
+    print(f"{class_table_0.view_momentum_matrix()=}")
+    print(f"{class_table_2.view_momentum_matrix()=}")
+    
+    testing.append((class_phase_0, real_phase_0 ))
     testing.append((class_phase_2, real_phase_2))
     
-    
-    
-    
-
     #run over all tests
-    for test in testing:
+    for idx, test in enumerate(testing):
         #functions for this test, new every test
         class_phase_func, real_phase_func = test
         #Energy counters for this test, reset every test
@@ -91,24 +92,46 @@ def test_matrix_evaluation():
         #each tests we will integrate over the full BZ
         for k1 in k1_grid:
             for k2 in k2_grid:
-                #get the matrix for this point in the BZ
+                #class phase calculations
                 class_phase_matrix = class_phase_func(k1,k2)
                 real_phase_matrix = real_phase_func(k1,k2)
                 #diagnolize the matrix for this point in the BZ
                 eigenvalues_class = np.linalg.eigvalsh(class_phase_matrix)
-                eigenvalues_real = np.linalg.eigvalsh(real_phase_matrix)
-                #sums only the positive values for this point in the BZ
-                total_energy_class += np.sum(eigenvalues_class[eigenvalues_class < 0 ])
-                total_energy_real += np.sum(eigenvalues_real[eigenvalues_real < 0 ])
+                if not np.allclose(np.imag(eigenvalues_class), 0, atol=1e-10):
+                    logger.warning(f"Warning: Large imaginary components found at k=({k1}, {k2})! Matrix might not be Hermitian.")
+            
+                total_energy_class += np.sum(np.real(eigenvalues_class)[np.real(eigenvalues_class) < 0 ])
+                
+                #hand phase calculations
+                real_phase_matrix = real_phase_func(k1,k2)
+                if real_phase_matrix.shape == (1,):
+                    energy_val = np.real(real_phase_matrix[0])
+                    if energy_val < 0:
+                        total_energy_real += energy_val
+                else:
+                    eigenvalues_real = np.linalg.eigvalsh(real_phase_matrix)
+                    total_energy_real += np.sum(eigenvalues_real[eigenvalues_real < 0 ])
+               
+                #check that the matrices are close in value
+                # assert np.allclose( real_phase_matrix, class_phase_matrix, rtol=1e-9, atol=1e-9)
+                
+                #print out the matrix info for the point
+                print(f"######{float(k1)=}, {float(k2)=}#######")
+                print(f"Class:\n{class_phase_matrix}")
+                print(f"Hand:\n{real_phase_matrix}")
+                print(f"{total_energy_class=}")
+                print(f"{total_energy_real=}")
+                print("#############")
+                
         ##### ONCE WE FINISH ADDING UP ALL THE POINTS IN THE BZ #######
         #we can normalize our result
         ground_state_energy_class_normalzied = total_energy_class / (Number_points_integrate_over ** 2)
         ground_state_energy_real_normalzied = total_energy_real  / (Number_points_integrate_over ** 2)
         #we can now compare our resutls
+        print(f"{idx=}")
         print(f"{ground_state_energy_class_normalzied=}")
         print(f"{ground_state_energy_real_normalzied=}")
-        assert ground_state_energy_class_normalzied == ground_state_energy_real_normalzied
-        
+        assert np.isclose(ground_state_energy_class_normalzied, ground_state_energy_real_normalzied, atol=1e-8)        
         ################ END ALL TESTS ################
     
     
