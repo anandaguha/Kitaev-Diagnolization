@@ -1,6 +1,8 @@
 import numpy as np
 from types import SimpleNamespace
 
+alpha_basis_1 = 2
+alpha_basis_2 = 3
 params = SimpleNamespace(
     table0 = np.array([
         [0,0,0,0,0,0],
@@ -36,7 +38,7 @@ params = SimpleNamespace(
         [2,3,0,3,2,0],
         [0,1,3,1,0,3],
         [1,0,2,0,1,2]
-    ])
+    ]),
 )
 table_to_kitaev = {
     "Two": "table1",
@@ -59,3 +61,12 @@ table_to_kitaev = {
     "Fourteen":"table6",
     
 }
+cell_vectors = SimpleNamespace(
+    table0 = ((1,0),(0,1)),
+    table1 = ((2,-1)(0,1)),
+    table2 = ((3,0),(0,1)),
+    table3 = ((2,-1),(1,1)),
+    table4 = ((4,-2), (0,1)),
+    table5 = ((2,0),(0,2)),
+    table6 = ((2,-1), (0,2)),
+)
