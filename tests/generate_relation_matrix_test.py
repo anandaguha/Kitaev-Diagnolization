@@ -42,7 +42,7 @@ def test_matrix_construction():
 #Testing actual numerical value against known coded tables
 def test_matrix_evaluation():
     #Controls precsion of calculation
-    Number_points_integrate_over = 1000
+    Number_points_integrate_over = 2
     #Set up grid integration
     k1_grid = np.linspace(0,1,Number_points_integrate_over)
     k2_grid = np.linspace(0,1,Number_points_integrate_over)

@@ -41,6 +41,7 @@ params = SimpleNamespace(
     ]),
 )
 table_to_kitaev = {
+    "One": "table0",
     "Two": "table1",
     
     "Three": "table2",
