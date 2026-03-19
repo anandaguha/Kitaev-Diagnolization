@@ -17,7 +17,7 @@ importlib.reload(consts)
 def test_matrix_construction():
     # Setup
     table = consts.params.table1
-    model_pahse_2 = Relation_Table(neighbor_tabel = table, total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
+    model_pahse_2 = Relation_Table(neighbor_table = table, total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
     
     # Run
     dcomposed_bond_1 = model_pahse_2._decompose_bond(2)
@@ -36,7 +36,7 @@ def test_matrix_construction():
     np.testing.assert_allclose(decompose_bond_diffrent, expected_decompose_bonds_diff, rtol=1e-3, atol= 1e-3)
     
     final_table_model_phase_2 = model_pahse_2.create_momentum_transform()
-    print(f"Final table: {final_table_model_phase_2(1,2)} with k1,k2 = 1,2")
+    # print(f"Final table: {final_table_model_phase_2(1,2)} with k1,k2 = 1,2")
     return
 
 #Testing actual numerical value against known coded tables
