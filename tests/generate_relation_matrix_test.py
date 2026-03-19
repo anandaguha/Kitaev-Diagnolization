@@ -94,8 +94,6 @@ def test_matrix_evaluation():
             for k2 in k2_grid:
                 #class phase calculations
                 class_phase_matrix = class_phase_func(k1,k2)
-                real_phase_matrix = real_phase_func(k1,k2)
-                #diagnolize the matrix for this point in the BZ
                 eigenvalues_class = np.linalg.eigvalsh(class_phase_matrix)
                 if not np.allclose(np.imag(eigenvalues_class), 0, atol=1e-10):
                     logger.warning(f"Warning: Large imaginary components found at k=({k1}, {k2})! Matrix might not be Hermitian.")
