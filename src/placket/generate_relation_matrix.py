@@ -57,7 +57,7 @@ class Relation_Table:
     
     #Private method
     def _decompose_bond(self, bond:int) -> Tuple [float,float]:
-        steps_between_first_and_xbond = abs(bond - self._basis_bonds[0])
+        steps_between_first_and_xbond = bond - self._basis_bonds[0]
         
         coefA_numerator = np.sin(self._two_pi_over_N * (self._steps_between_basis - steps_between_first_and_xbond))
         coefA_denom = np.sin(self._two_pi_over_N * self._steps_between_basis)
