@@ -1,18 +1,21 @@
 from typing import Dict, Tuple
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 class Relation_Table:
     """
     Goal of this class is to take in a table with the unit cells and then 
     it will give you a unitary hermitation matrix that you can plug
     two momentum values into. 
     """
-    def __init__ (self, neighbor_tabel:np.ndarray, total_bonds:int ,basis_bonds:tuple[int], basis_unit_cell:tuple[tuple[int]], reflection: bool = False ):
+    def __init__ (self, neighbor_table:np.ndarray, total_bonds:int ,basis_bonds:tuple[int], basis_unit_cell:tuple[tuple[int]], reflection: bool = False ):
         """
         You take in 
         neighbot_table: neighbor bonds relation table, 
         total_bonds: Number of neighbor for a a single site ,
         basis_bonds: the nearest neighbor bonds you want to use as a basis, 
-        basis_unit_cell: the unit cell basis vectors this needs to be given in terms of the nearest neighbor basis,
+        basis_unit_cell: the unit cell basis vectors this *needs* to be given in terms of the nearest neighbor basis,
         reflection: if it is a symetric  for computation time a possible (not implemented yet)
         """
         if reflection and total_bonds%2 != 0 :
@@ -20,7 +23,7 @@ class Relation_Table:
         elif reflection: 
             total_bonds = total_bonds/2
         #mybe something to validate dims of the tessalation pattern
-        self._neighbor_table = neighbor_tabel
+        self._neighbor_table = neighbor_table
         self._total_bonds:int = total_bonds
         self._basis_bonds:tuple[int] = basis_bonds
         self._basis_unit_cell:tuple[tuple[int]] = basis_unit_cell
@@ -59,7 +62,7 @@ class Relation_Table:
         coefA_numerator = np.sin(self._two_pi_over_N * (self._steps_between_basis - steps_between_first_and_xbond))
         coefA_denom = np.sin(self._two_pi_over_N * self._steps_between_basis)
         coefA = coefA_numerator/coefA_denom
-        print(f"For the coeeficent of {self._basis_bonds[0]} is \nnumerator: {coefA_numerator} and\n denomanator: {coefA_denom}")
+        # print(f"For the coeeficent of {self._basis_bonds[0]} is \nnumerator: {coefA_numerator} and\n denomanator: {coefA_denom}")
         coefB_numerator = np.sin(self._two_pi_over_N * steps_between_first_and_xbond)
         coefB_denom = np.sin(self._two_pi_over_N * self._steps_between_basis)
         coefB = coefB_numerator/coefB_denom
