@@ -2,6 +2,9 @@ import numpy as np
 from types import SimpleNamespace
 
 params = SimpleNamespace(
+    table0 = np.array([
+        [0,0,0,0,0,0],
+    ]),
     table1 = np.array([
         [1,1,0,1,1,0],
         [0,0,1,0,0,1]
