@@ -64,7 +64,15 @@ def test_matrix_evaluation():
         actual_phase_2[1,1] = np.exp(np.pi * 1j *k2) + np.exp(-1* np.pi * 1j  *k2)
     
         return actual_phase_2
-    class_table_2 = Relation_Table(neighbor_tabel = consts.params.table1 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
+    def real_phase_0(k_x,k_y):
+        energy = np.zeros(1)
+        energy[0] = 2 * np.cos(k_x) + 4 * np.cos(0.5 * k_x) * np.cos(np.sqrt(3)/2 * k_y)
+        return energy 
+    
+    class_table_0 = Relation_Table(neighbor_table = consts.params.table0, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
+    class_phase_0 = class_table_0.create_momentum_transform()
+    
+    class_table_2 = Relation_Table(neighbor_table = consts.params.table1 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
     class_phase_2 = class_table_2.create_momentum_transform()
     testing.append((class_phase_2, real_phase_2))
     
