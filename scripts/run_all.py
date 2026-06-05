@@ -73,7 +73,7 @@ def main(Coupling_strength_min_max: Tuple[float,float] = (0,1), NNSpin_coupling_
         t = 0
         gRange = [0]
     print(f"Coupling is {Coupling} and t value is {t}")
-    N=Unit_cells
+    N = Unit_cells
     points = Gridding
     kRange = np.linspace(NNSpin_coupling_min_max[0], NNSpin_coupling_min_max[1], Gridding)
     ep = Chemical_potential
