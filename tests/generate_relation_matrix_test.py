@@ -10,9 +10,19 @@ sys.path.insert(0, project_root)
 import numpy as np
 import pytest
 from src.placket.generate_relation_matrix import Relation_Table
+from scipy.optimize import minimize_scalar, brentq
 import static.unit_cell as consts
 import importlib
 importlib.reload(consts)
+
+def what_x_gives_y(wanted_value, func, x_min=-1000, x_max=1000):
+# Minimize |func(x) - wanted_value|
+    result = minimize_scalar(
+        lambda x: abs(func(x) - wanted_value),
+        bounds=(x_min, x_max),
+        method='bounded'
+    )
+    return result.x
 
 def test_matrix_construction():
     # Setup
@@ -64,7 +74,7 @@ def test_matrix_evaluation():
         actual_phase_2[1,1] = np.exp(np.pi * 1j *k2) + np.exp(-1* np.pi * 1j  *k2)
     
         return actual_phase_2
-    def real_phase_0(k_x,k_y):
+    def real_phase_func_0(k_x,k_y):
         energy = np.zeros(1)
         energy[0] = 2 * np.cos(k_x) + 4 * np.cos(0.5 * k_x) * np.cos(np.sqrt(3)/2 * k_y)
         return energy 
@@ -75,10 +85,10 @@ def test_matrix_evaluation():
     class_table_2 = Relation_Table(neighbor_table = consts.params.table1 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
     class_phase_2 = class_table_2.create_momentum_transform()
     
-    print(f"{class_table_0.view_momentum_matrix()=}")
-    print(f"{class_table_2.view_momentum_matrix()=}")
+    # print(f"{class_table_0.view_momentum_matrix()=}")
+    # print(f"{class_table_2.view_momentum_matrix()=}")
     
-    testing.append((class_phase_0, real_phase_0 ))
+    testing.append((class_phase_0, real_phase_func_0 ))
     testing.append((class_phase_2, real_phase_2))
     
     #run over all tests
@@ -114,12 +124,12 @@ def test_matrix_evaluation():
                 # assert np.allclose( real_phase_matrix, class_phase_matrix, rtol=1e-9, atol=1e-9)
                 
                 #print out the matrix info for the point
-                print(f"######{float(k1)=}, {float(k2)=}#######")
-                print(f"Class:\n{class_phase_matrix}")
-                print(f"Hand:\n{real_phase_matrix}")
-                print(f"{total_energy_class=}")
-                print(f"{total_energy_real=}")
-                print("#############")
+                # print(f"######{float(k1)=}, {float(k2)=}#######")
+                # print(f"Class:\n{class_phase_matrix}")
+                # print(f"Hand:\n{real_phase_matrix}")
+                # print(f"{total_energy_class=}")
+                # print(f"{total_energy_real=}")
+                # print("#############")
                 
         ##### ONCE WE FINISH ADDING UP ALL THE POINTS IN THE BZ #######
         #we can normalize our result
@@ -132,7 +142,80 @@ def test_matrix_evaluation():
         assert np.isclose(ground_state_energy_class_normalzied, ground_state_energy_real_normalzied, atol=1e-8)        
         ################ END ALL TESTS ################
     
+def test_mu_value():
+    #Controls precsion of calculation
+    Number_points_integrate_over = 100
+    #Set up grid integration
+    k1_grid = np.linspace(0,1,Number_points_integrate_over)
+    k2_grid = np.linspace(0,1,Number_points_integrate_over)
+    testing = []
+    results = []
+
+    #Define all known matrices to compare against
+
+    def real_phase_2(k1,k2):
+        actual_phase_2 = np.zeros((2,2), dtype=complex)
+        actual_phase_2[0,0] = np.exp(np.pi * 1j *k2) + np.exp(-1* np.pi * 1j * k2)
+        
+        actual_phase_2[0,1] =(
+            np.exp(np.pi * 1j * (k1 - k2/2)) + np.exp(-1 *np.pi * 1j * (k1 - k2/2)) 
+            + np.exp(np.pi * 1j * (k1 + k2/2)) + np.exp(-1 *np.pi * 1j * (k1 + k2/2)) 
+        )
+        actual_phase_2[1,0] =(
+            np.exp(np.pi * 1j * (k1 - k2/2)) + np.exp(-1 *np.pi * 1j * (k1 - k2/2)) 
+            + np.exp(np.pi * 1j * (k1 + k2/2)) + np.exp(-1 *np.pi * 1j * (k1 + k2/2)) 
+        )
+        actual_phase_2[1,1] = np.exp(np.pi * 1j *k2) + np.exp(-1* np.pi * 1j  *k2)
     
+        return actual_phase_2
+    def real_phase_func_0(k_x,k_y):
+        energy = np.zeros(1)
+        energy[0] = 2 * np.cos(k_x) + 4 * np.cos(0.5 * k_x) * np.cos(np.sqrt(3)/2 * k_y)
+        return energy 
+        
+    class_table_0 = Relation_Table(neighbor_table = consts.params.table0, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
+    class_phase_0 = class_table_0.create_momentum_transform()
+    
+    class_table_2 = Relation_Table(neighbor_table = consts.params.table1 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
+    class_phase_2 = class_table_2.create_momentum_transform()
+    
+    print(f"{class_table_0.view_momentum_matrix()=}")
+    print(f"{class_table_2.view_momentum_matrix()=}")
+    
+    # testing.append((class_phase_0, real_phase_func_0,1))
+    testing.append((class_phase_2, real_phase_2,2))
+    for test in testing:
+        class_phase_func, real_phase_func, cell_size = test
+        def compute_mu(mu, phase_func, unit_cell_size):
+            total_sites = 0  # Reset on every call
+            for k1 in k1_grid:
+                for k2 in k2_grid:
+                    matrix = phase_func(k1, k2)
+                    eigenvalues = np.linalg.eigvalsh(matrix)
+                    if not np.allclose(np.imag(eigenvalues), 0, atol=1e-10):
+                        logger.warning(f"Large imaginary components at k=({k1}, {k2})")
+                    total_sites += np.sum(np.real(eigenvalues) < mu)  # vectorized
+            density = total_sites / (len(k1_grid) * len(k2_grid) * unit_cell_size)
+            return density
+        
+        wanted_density = 0.5
+        mu_class = brentq(
+            lambda mu: compute_mu(mu, class_phase_func,cell_size) - wanted_density,
+            a=-10,   # lower bound for mu search
+            b=10     # upper bound for mu search
+        )
+        mu_real = brentq(
+            lambda mu: compute_mu(mu, real_phase_func,cell_size) - wanted_density,
+            a=-10,   # lower bound for mu search
+            b=10     # upper bound for mu search
+        )
+        print(f"*"*60)
+        print(f"This is what I set the density to:{wanted_density}")
+        print(f"THIS IS THE MU VALUE FROM MY CLASS MATRIX: {mu_class:.3f}")
+        print(f"THIS IS THE MU VALUE FROM MY HAND MATRIX: {mu_real:.3f}")
+        print(f"*"*60)
+        assert np.isclose(mu_class,mu_real, atol=1e-9)
+   
     
     
 if __name__ == "__main__":
