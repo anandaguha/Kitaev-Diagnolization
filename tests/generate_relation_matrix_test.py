@@ -26,7 +26,7 @@ def what_x_gives_y(wanted_value, func, x_min=-1000, x_max=1000):
 
 def test_matrix_construction():
     # Setup
-    table = consts.params.table1
+    table = consts.conduction_electron_cell.table1
     model_pahse_2 = Relation_Table(neighbor_table = table, total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
     
     # Run
@@ -79,10 +79,10 @@ def test_matrix_evaluation():
         energy[0] = 2 * np.cos(k_x) + 4 * np.cos(0.5 * k_x) * np.cos(np.sqrt(3)/2 * k_y)
         return energy 
     
-    class_table_0 = Relation_Table(neighbor_table = consts.params.table0, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
+    class_table_0 = Relation_Table(neighbor_table = consts.conduction_electron_cell.table0, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
     class_phase_0 = class_table_0.create_momentum_transform()
     
-    class_table_2 = Relation_Table(neighbor_table = consts.params.table1 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
+    class_table_2 = Relation_Table(neighbor_table = consts.conduction_electron_cell.table1 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
     class_phase_2 = class_table_2.create_momentum_transform()
     
     # print(f"{class_table_0.view_momentum_matrix()=}")
@@ -173,10 +173,10 @@ def test_mu_value():
         energy[0] = 2 * np.cos(k_x) + 4 * np.cos(0.5 * k_x) * np.cos(np.sqrt(3)/2 * k_y)
         return energy 
         
-    class_table_0 = Relation_Table(neighbor_table = consts.params.table0, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
+    class_table_0 = Relation_Table(neighbor_table = consts.conduction_electron_cell.table0, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
     class_phase_0 = class_table_0.create_momentum_transform()
     
-    class_table_2 = Relation_Table(neighbor_table = consts.params.table1 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
+    class_table_2 = Relation_Table(neighbor_table = consts.conduction_electron_cell.table1 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
     class_phase_2 = class_table_2.create_momentum_transform()
     
     print(f"{class_table_0.view_momentum_matrix()=}")

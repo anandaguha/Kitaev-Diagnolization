@@ -40,10 +40,10 @@ class Relation_Table:
     # Getter/Setter # 
     #################
     @property
-    def basis_bonds():
+    def basis_bonds(self):
         return self._basis_bonds
     @basis_bonds.setter
-    def basis_bonds(value):
+    def basis_bonds(self,value):
         if not isinstance(value, tuple):
             raise ValueError(f"You did not pass a tupel when setting bassis bonds")
         if len(value) != 2:

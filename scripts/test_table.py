@@ -13,7 +13,7 @@ import static.unit_cell as consts
 import numpy as np
 
 def main():
-    for idx, (name,table) in enumerate(vars(consts.params).items()):
+    for idx, (name,table) in enumerate(vars(consts.conduction_electron_cell).items()):
         if idx != 1:
             continue
         # print(name,type(table))
