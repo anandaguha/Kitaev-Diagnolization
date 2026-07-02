@@ -50,6 +50,24 @@ conduction_electron_cell = SimpleNamespace(
         [1,0,2,0,1,2]
     ]),
 )
+#tells you if a site has a vison [site 0, site 1, ..., site n]
+#1 if no vison -1 if has a vison
+conduction_electron_cell_vison_configuration = SimpleNamespace(
+    vison_table0 = np.array([1]),
+    vison_table1 = np.array([-1,1]),
+    vison_table2 = np.array([-1,1,1]),
+    vison_table3 = np.array([-1,1,-1]),
+    vison_table4 = np.array([-1,1,1]),
+    vison_table5 = np.array([-1,-1,1]),
+    vison_table6 = np.array([-1,1,1,1]),
+    vison_table7 = np.array([-1,1,1,-1]),
+    vison_table8 = np.array([-1,1,-1,-1]),
+    vison_table9 = np.array([-1,1,1,1]),
+    vison_table10 = np.array([1,-1,-1,-1]),
+    vison_table11 = np.array([-1,1,1,1]),
+    vison_table12 = np.array([-1,1,-1,1]),
+    vison_table13 = np.array([1,-1,-1,-1]),
+)
 #the translation vectors for unit cells above
 #GIVEN IN THE BASIS AT THE TOP
 conduction_cell_vectors = SimpleNamespace(
@@ -63,27 +81,50 @@ conduction_cell_vectors = SimpleNamespace(
 )
 #tells you what table in code connects to the tables in kitaev (human readability)
 #https://arxiv.org/pdf/cond-mat/0506438 page 46 
-conduction_table_to_kitaev = {
-    "One": "table0",
-    "Two": "table1",
+
+kitaev_to_conduction_table = {
+    1: "table0",
+    2: "table1",
     
-    "Three": "table2",
-    "Four": "table2",
+    3: "table2",
+    4: "table2",
     
-    "Five":"table3",
-    "Six":"table3",
+    5: "table3",
+    6: "table3",
     
-    "Seven":"table4",
-    "Eight":"table4",
-    "Nine":"table4",
+    7: "table4",
+    8: "table4",
+    9: "table4",
     
-    "Ten":"table5",
-    "Eleven":"table5",
+    10: "table5",
+    11: "table5",
     
-    "Twelve":"table6",
-    "Thirteen":"table6",
-    "Fourteen":"table6",
+    12: "table6",
+    13: "table6",
+    14: "table6",
     
+}
+
+kitaev_to_conduction_table_vison = {
+    1: "vison_table0",
+    2: "vison_table1",
+    
+    3: "vison_table2",
+    4: "vison_table3",
+    
+    5: "vison_table4",
+    6: "vison_table5",
+    
+    7: "vison_table6",
+    8: "vison_table7",
+    9: "vison_table8",
+    
+    10: "vison_table9",
+    11: "vison_table10",
+    
+    12: "vison_table11",
+    13: "vison_table12",
+    14: "vison_table13",  
 }
 
 
@@ -102,3 +143,37 @@ coupling_cell = SimpleNamespace(
         []
     ])
 )
+"""
+Use this code for creating the tables maybe? 
+for m in range(N):
+        for n in range(N):
+            # Site indices for A and B in unit cell (m, n) where m is the row index and n is the collum index
+            idx_A = (m * N + n) * 2  # Sublattice A
+            idx_B = idx_A + 1        # Sublattice B
+
+            # x-bond: A(m,n) to B(m,n) IF INSWET
+            if idx_A  in xlist: 
+                M_hex[idx_A, idx_B] = -1*-2*Jx*1j
+                M_hex[idx_B, idx_A] = -1*2*Jx*1j  
+            else: 
+                M_hex[idx_A, idx_B] = -2*Jx*1j
+                M_hex[idx_B, idx_A] = 2*Jx*1j
+
+            # y-bond: B(m,n) to A(m, n+1)
+            n_next = (n + 1) % N
+            idx_A_next = (m * N + n_next) * 2
+            M_hex[idx_B, idx_A_next] = 2*Jy*1j
+            M_hex[idx_A_next, idx_B] = -2*Jy*1j
+
+            # z-bond: B(m,n) to A(m+1, n) IF INSWERT
+            m_next = (m - 1) % N
+            n_next = (n+1) %N 
+            idx_A_next = (m_next * N + n_next) * 2
+            if idx_A_next in zlist: 
+                M_hex[idx_B, idx_A_next] = -1*2*Jz*1j
+                M_hex[idx_A_next, idx_B] = -1*-2*Jz*1j
+            else: 
+                M_hex[idx_B, idx_A_next] = 2*Jz*1j
+                M_hex[idx_A_next, idx_B] = -2*Jz*1j
+                
+"""

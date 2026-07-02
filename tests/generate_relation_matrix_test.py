@@ -9,10 +9,13 @@ sys.path.insert(0, project_root)
 
 import numpy as np
 import pytest
-from src.placket.generate_relation_matrix import Relation_Table
-from scipy.optimize import minimize_scalar, brentq
 import static.unit_cell as consts
 import importlib
+
+from scipy.optimize import minimize_scalar, brentq
+from sympy import symbols, Matrix, pprint, nsimplify
+
+from src.placket.generate_relation_matrix import Relation_Table
 importlib.reload(consts)
 
 def what_x_gives_y(wanted_value, func, x_min=-1000, x_max=1000):
@@ -79,10 +82,10 @@ def test_matrix_evaluation():
         energy[0] = 2 * np.cos(k_x) + 4 * np.cos(0.5 * k_x) * np.cos(np.sqrt(3)/2 * k_y)
         return energy 
     
-    class_table_0 = Relation_Table(neighbor_table = consts.conduction_electron_cell.table0, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
+    class_table_0 = Relation_Table(1, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
     class_phase_0 = class_table_0.create_momentum_transform()
     
-    class_table_2 = Relation_Table(neighbor_table = consts.conduction_electron_cell.table1 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
+    class_table_2 = Relation_Table(2, total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
     class_phase_2 = class_table_2.create_momentum_transform()
     
     # print(f"{class_table_0.view_momentum_matrix()=}")
@@ -173,10 +176,10 @@ def test_mu_value():
         energy[0] = 2 * np.cos(k_x) + 4 * np.cos(0.5 * k_x) * np.cos(np.sqrt(3)/2 * k_y)
         return energy 
         
-    class_table_0 = Relation_Table(neighbor_table = consts.conduction_electron_cell.table0, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
+    class_table_0 = Relation_Table(1, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
     class_phase_0 = class_table_0.create_momentum_transform()
     
-    class_table_2 = Relation_Table(neighbor_table = consts.conduction_electron_cell.table1 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
+    class_table_2 = Relation_Table(2 , total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
     class_phase_2 = class_table_2.create_momentum_transform()
     
     print(f"{class_table_0.view_momentum_matrix()=}")
@@ -216,7 +219,69 @@ def test_mu_value():
         print(f"*"*60)
         assert np.isclose(mu_class,mu_real, atol=1e-9)
    
+def test_coupling_up():
+    #table 0 test
+    class_table_0 = Relation_Table(1, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
+    g = symbols('g')
+    #get your matrix
+    momentum_spin_up_coupled_matrix_0 = class_table_0.create_momentum_transform(g_mag_field_spin_liquid_coupling_strength=g, spin_coupling=1)
+    #'evaluate' the matrix using symbols so you can see what it looks like
+    k1,k2 = symbols('k1 k2')
+    final_matrix = momentum_spin_up_coupled_matrix_0(k1,k2)
     
+    print(f"Spin Up Conduction Band ↑Pattern 1↑ \n\n") 
+    # Round and Simplify the Sympy Matrix and pretty-print it afterwards!
+    clean_matrix = nsimplify(final_matrix, tolerance=1e-5)
+    pprint(Matrix(clean_matrix)) 
+    # print(np.array2string(final_matrix, precision=3, separator=' + ', dtype=np.str_))
+
+    #table 1 test
+    class_table_1 = Relation_Table(2, total_bonds = 6, basis_bonds=(2,3), basis_unit_cell = ((2,-1),(0,2)))
+    #get your matrix
+    momentum_spin_up_coupled_matrix_1 = class_table_1.create_momentum_transform(g_mag_field_spin_liquid_coupling_strength=g, spin_coupling=1)
+    #'evaluate' the matrix using symbols so you can see what it looks like
+    k1,k2 = symbols('k1 k2')
+    final_matrix = momentum_spin_up_coupled_matrix_1(k1,k2)
     
+    print(f"Spin Up Conduction Band ↑Pattern 2↑ \n\n") 
+    # Round and Simplify the Sympy Matrix and pretty-print it afterwards!
+    clean_matrix = nsimplify(final_matrix, tolerance=1e-5)
+    pprint(Matrix(clean_matrix))
+    # print(np.array2string(final_matrix, precision=3, separator=' + ', dtype=np.str_))
+ 
+
+def test_coupling_down():
+    
+    #table 0 test
+    class_table_0 = Relation_Table(1, total_bonds=6, basis_bonds= (2,3), basis_unit_cell= ((1,0),(0,1)))
+    g = symbols('g')
+    #get your matrix
+    momentum_spin_up_coupled_matrix_0 = class_table_0.create_momentum_transform(g_mag_field_spin_liquid_coupling_strength=g, spin_coupling=-1)
+    #'evaluate' the matrix using symbols so you can see what it looks like
+    k1,k2 = symbols('k1 k2')
+    final_matrix = momentum_spin_up_coupled_matrix_0(k1,k2)
+    
+    print(f"Spin Down Conduction Band ↓Pattern 1↓ \n\n") 
+    # print(np.array2string(final_matrix, precision=3, separator=' + ', dtype=np.str_))
+    # Round and Simplify the Sympy Matrix and pretty-print it afterwards!
+    clean_matrix = nsimplify(final_matrix, tolerance=1e-5)
+    pprint(Matrix(clean_matrix))
+
+    #table 1 test
+    class_table_1 = Relation_Table(2, total_bonds = 6, basis_bonds=(2,3), basis_unit_cell = ((2,-1),(0,2)))
+    #get your matrix
+    momentum_spin_up_coupled_matrix_1 = class_table_1.create_momentum_transform(g_mag_field_spin_liquid_coupling_strength=g, spin_coupling=-1)
+    #'evaluate' the matrix using symbols so you can see what it looks like
+    k1,k2 = symbols('k1 k2')
+    final_matrix = momentum_spin_up_coupled_matrix_1(k1,k2)
+    
+    print(f"Spin Down Conduction Band ↓Pattern 2↓ \n\n") 
+    # Round and Simplify the Sympy Matrix and pretty-print it afterwards!
+    clean_matrix = nsimplify(final_matrix, tolerance=1e-5)
+    pprint(Matrix(clean_matrix))
+    # print(np.array2string(final_matrix, precision=3, separator=' + ', dtype=np.str_))
+
 if __name__ == "__main__":
-    test_matrix_construction()
+    # test_matrix_construction()
+    test_coupling_up()
+    test_coupling_down()
