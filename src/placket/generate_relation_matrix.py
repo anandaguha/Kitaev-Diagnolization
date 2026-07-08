@@ -158,14 +158,15 @@ class Relation_Table:
         # k2_vals = np.linspace(-np.pi, np.pi, 1000)
         # all_matrices = compute_matrix(k1_vals, k2_vals, 1.5)
         # ==========================================
-        def functional_momentum_matrix(k1, k2):
+        
+        def functional_momentum_matrix(kx, ky):
             # Reset the table to zero for this specific k1, k2
             table = np.zeros((self._conduction_neighbor_table.shape[0], self._conduction_neighbor_table.shape[0]), dtype=object)
             # table_debug = np.zeros((self._neighbor_table.shape[0], self._neighbor_table.shape[0], self._total_bonds), dtype=np.complex128)
             # Quickly zip through the pre-calculated instructions
             for instruct in bond_instructions:
                 # table_debug[inst['row'], inst['col'],inst['bond']] += (k1*inst['c1'] + k2*inst['c2'])
-                table[instruct['row'], instruct['col']] += exp(I * 2 * pi * (k1 * instruct['c1'] + k2 * instruct['c2']))
+                table[instruct['row'], instruct['col']] += exp(I * 2 * pi * (kx * instruct['c1'] + ky * instruct['c2']))
             
             #add the diagnoal terms
             for m in range(table.shape[0]):
