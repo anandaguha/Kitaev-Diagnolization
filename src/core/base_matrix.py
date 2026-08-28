@@ -17,12 +17,40 @@ class BaseMatrix():
         print("The letter of the update is f")
         return None
 
+    @staticmethod
+    def __process_vector(D,vec,symbolic):
+        if isinstance(vec, (str, sp.Expr)):
+            vec_str = str(vec)
+            if vec_str.startswith("-"):            # If the input is a string, generate D symbols (1-indexed: e.g., p1, p2)
+                syms = sp.symbols(f'{vec_str[1:]}1:{D+1}')
+                return [-s for s in syms]
+            else:
+                return  sp.symbols(f'{vec_str}1:{D+1}')
+        else:
+            # If it's an array/list, convert elements to exact SymPy representations
+            if symbolic:
+                return [sp.nsimplify(val, constants=[sp.sqrt(3)], tolerance=1e-10) for val in vec]
+            return np.asarray(vec)
+
     
     @staticmethod
     def check_hermitian (hermetian_matrix):
         if not np.allclose(hermetian_matrix, hermetian_matrix.conj().transpose(0, 2, 1), atol=1e-5):
             logger.warning("Warning: Matrices are not strictly Hermitian! Imaginary leaks detected.")
         return None
+
+    @staticmethod
+    def dot_prod(D, sym1, sym2, symbolic=True):
+        vec1 = BaseMatrix.__process_vector(D,sym1,symbolic)
+        vec2 = BaseMatrix.__process_vector(D,sym2,symbolic)
+
+        if symbolic:
+            # SymPy naturally builds the symbolic expression when using Python's built-in sum()
+            return 2 * sp.pi * sp.I * sum(v1_i * v2_i for v1_i, v2_i in zip(vec1, vec2))
+        else:
+            # Standard numerical dot product
+            return np.dot(np.squeeze(vec1), np.squeeze(vec2)) * 2 * np.pi * 1j
+
     @staticmethod
     def convert_basis (original_vector_set, new_basis, stacked_by: Literal["row", "col"], symbolic:Optional[bool] = False):
         #set up everything correctly
@@ -99,7 +127,7 @@ class BaseMatrix():
             logger.warning(f"\nThe number of dim's you provided is not matching the number of dims found!\nGiven dims: {number_of_dim}\nActual dims:{ndims}\n")
         dynamic_axis = list(range(2,ndims)) + [0,1]
 
-        # 2. Format the matrix correctly so np.eiginvals can compute it properly
+        # 2. Format the matrix correctly so np.eiginvals can compute it properly 
         # Make sure you moveaxis/transpose -> reshape! RESHAPING should always happen last for speed!!
         # aka transpose then flatten
         transposed_stacked_computation_matrix = np.transpose(unformated_stacked_computational_matrix,axes=dynamic_axis) #puts all the actual values that we squished into one list at the front, this is how np.eginvalues needs it. The row and column are just basically metadata that tell np how to interpert this massive list of values
@@ -113,5 +141,5 @@ class BaseMatrix():
         return imaginary_flat_stacked_computational_matrix 
 
     @staticmethod 
-    def calculate_eignvaluse (matrix):
+    def sum_neg_eignvalues (matrix):
         return [np.linalg.eignvals(matrix) < 0].sum()
