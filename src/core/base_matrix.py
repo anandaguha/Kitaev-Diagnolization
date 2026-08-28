@@ -1,6 +1,7 @@
 import logging
+import sympy as sp
 logger = logging.Logger(__name__)
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Literal
 from sympy import symbols, lambdify, nsimplify, Matrix, Array
 import numpy as np
 class BaseMatrix():
@@ -10,13 +11,80 @@ class BaseMatrix():
 
     def __init__ ():
         return None
+
+    @staticmethod
+    def update_lib():
+        print("The letter of the update is f")
+        return None
+
     
     @staticmethod
     def check_hermitian (hermetian_matrix):
         if not np.allclose(hermetian_matrix, hermetian_matrix.conj().transpose(0, 2, 1), atol=1e-5):
             logger.warning("Warning: Matrices are not strictly Hermitian! Imaginary leaks detected.")
         return None
+    @staticmethod
+    def convert_basis (original_vector_set, new_basis, stacked_by: Literal["row", "col"], symbolic:Optional[bool] = False):
+        #set up everything correctly
+        original_vector_set = np.asarray(original_vector_set)
+        new_basis = np.asarray(new_basis)
 
+        #DO ALL YOUR SAFTEY CHECKS!
+        # Safety Check 1: Basis must be a square matrix
+        if new_basis.ndim != 2 or new_basis.shape[0] != new_basis.shape[1]:
+            raise ValueError(f"new_basis must be a square 2D matrix, got shape {new_basis.shape}")
+
+        D = new_basis.shape[0]
+        # Safety Check 2: Dimensions must match based on orientation
+        if stacked_by == "row":
+            set_cols = original_vector_set.shape[1]
+            if set_cols != D:
+                raise ValueError(
+                    f"Row orientation mismatch: original_vector_set columns ({set_cols}) "
+                    f"must equal new_basis rows ({D})."
+                )
+                
+        elif stacked_by == "col":
+            set_rows = original_vector_set.shape[0]
+            if set_rows != D:
+                raise ValueError(
+                    f"Col orientation mismatch: new_basis dimensions ({D}) "
+                    f"must equal original_vector_set rows ({set_rows})."
+                )
+        else:
+            raise ValueError("orientation must be exactly 'row' or 'col'")
+
+
+        #Do the computations in sympy or numpy based on flag
+        if symbolic:
+            # 1. Convert to SymPy
+            sym_original = sp.Matrix(original_vector_set)
+            sym_basis = sp.Matrix(new_basis)
+            
+            # 2. "Snap" floating point numbers to exact fractions/roots for readability
+            sym_original = sp.nsimplify(sym_original, constants=[sp.sqrt(3)/2], tolerance=1e-5)
+            sym_basis = sp.nsimplify(sym_basis, constants=[sp.sqrt(3)/2], tolerance=1e-5)
+            
+            # 3. Do exact algebraic inversion and multiplication
+            change_of_basis_matrix = sym_basis.inv()
+            
+            if stacked_by == "row":
+                new_vector_set = sym_original @ change_of_basis_matrix
+            elif stacked_by == "col":
+                new_vector_set = change_of_basis_matrix @ sym_original
+                
+            # 4. Return the sympy rep 
+            return new_vector_set
+        else:
+            change_of_basis_matrix = np.linalg.inv(new_basis)
+            if stacked_by == "row":
+                new_vector_set = original_vector_set @ change_of_basis_matrix
+
+            if stacked_by == "col":
+                new_vector_set = change_of_basis_matrix @ original_vector_set
+
+            return new_vector_set
+    
     @staticmethod
     def symbolic_to_numerical_matrix(symbolic_matrix, dict_of_symbols: Dict[Any, Any], number_of_dim:Optional[int] = None) -> np.ndarray:
         
