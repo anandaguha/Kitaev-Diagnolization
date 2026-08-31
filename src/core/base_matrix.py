@@ -140,4 +140,5 @@ class BaseMatrix():
 
     @staticmethod 
     def sum_neg_eignvalues (matrix):
-        return [np.linalg.eignvals(matrix) < 0].sum()
+        eignvalues = np.linalg.eigvalsh(matrix)
+        return np.sum(eignvalues[eignvalues<0])
