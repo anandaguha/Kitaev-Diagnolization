@@ -73,7 +73,7 @@ class Relation_Table:
             self._basis_bonds = value
     
     #Private method
-    def _decompose_bond(self, bond:int) -> Tuple [float,float]:
+    def _decompose_bond_neighbor_basis(self, bond:int) -> Tuple [float,float]:
         steps_between_first_and_xbond = bond - self._basis_bonds[0]
         
         coefA_numerator = np.sin(self._two_pi_over_N * (self._steps_between_basis - steps_between_first_and_xbond))
@@ -118,8 +118,8 @@ class Relation_Table:
             destination_neighbor = value
             bond = col_idx
             
-            coefA, coefB = self._decompose_bond(bond)
-            bond_vector_neighbor_basis = np.array([[coefA], [coefB]])
+            coefA_neighbor_basis, coefB_neighbor_basis = self._decompose_bond_neighbor_basis(bond)
+            bond_vector_neighbor_basis = np.array([[coefA_neighbor_basis], [coefB_neighbor_basis]])
             
             new_coef = inverse_neighbor_to_unit_cell @ bond_vector_neighbor_basis
             new_coef = new_coef.flatten()

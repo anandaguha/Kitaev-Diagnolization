@@ -37,9 +37,9 @@ def test_matrix_construction():
     model_pahse_2 = Relation_Table(neighbor_table = table, total_bonds = 6, basis_bonds = (2,3), basis_unit_cell = ((2,-1),(0,2))) #used to be basis_unit_cell = ((1,2),(-2,2)))
     
     # Run
-    dcomposed_bond_1 = model_pahse_2._decompose_bond(2)
-    decomposed_bond_2 = model_pahse_2._decompose_bond(3)
-    decompose_bond_diffrent = model_pahse_2._decompose_bond(6)
+    dcomposed_bond_1 = model_pahse_2._decompose_bond_neighbor_basis(2)
+    decomposed_bond_2 = model_pahse_2._decompose_bond_neighbor_basis(3)
+    decompose_bond_diffrent = model_pahse_2._decompose_bond_neighbor_basis(6)
     
     # Expected Value
     expected_decompsoed_bonds_1 = (1,0)
