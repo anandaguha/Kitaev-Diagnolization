@@ -138,10 +138,18 @@ are glued down to the corners of the hexagons which forms a hexagnoal lattice
 unlike the conduction electrons which are glued
 in the center of the hexagons and form a triangular lattice 
 """
-coupling_cell = SimpleNamespace(
-    table0 = np.array([
-        []
-    ])
+hexagon_sites = SimpleNamespace(
+    FourSite = np.array([
+        [np.array([[0,0]]), np.array([[-np.sqrt(3)/2,1/2],[-np.sqrt(3)/2,-1/2]])],
+        [np.array([[-np.sqrt(3)/2,1/2],[-np.sqrt(3)/2,-1/2]]), np.array([[0,0]])]
+    ], dtype=object)
+)
+hexagon_translation = SimpleNamespace(
+    FourSiteLinear = np.array([
+        [-1,0],
+        [np.sqrt(3),1]
+    ]
+    )
 )
 """
 Use this code for creating the tables maybe? 
